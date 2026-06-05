@@ -81,7 +81,7 @@ def actualizar_superficie(pais): #Pide al usuario la nueva superficie para un pa
     print("Superficie modificada con éxito")
 
     
-def buscar_pais_por_nombre(lista_paises): #Pide al usuario un nombre, lo busca en la lista de países y muestra los datos de los países que coincidan con la búsqueda @Eva Lecuona
+def buscar_pais_coincidencia_parcial(lista_paises):#Busca países con coincidencias parciales @Eva Lecuona
     busqueda = pedir_y_validar_texto("Ingresa el nombre a buscar: ").lower()
     contador_coincidencia = 0
 
@@ -92,27 +92,123 @@ def buscar_pais_por_nombre(lista_paises): #Pide al usuario un nombre, lo busca e
     if contador_coincidencia == 0:
         print("No se encontraron países que coincidan con la búsqueda")
 
-
-
-
-
-def actualizar_datos_pais(lista_paises): #Pide al usuario el nombre, lo busca en la lista de países y si lo encuentra, actualiza su población y superficie @Eva Lecuona
-    nombre_buscar = pedir_y_validar_texto("Ingresa el nombre del país a modificar: ").lower()
-    pais_encontrado = None
+def buscar_pais_coincidencia_exacta(lista_paises): #Busca un país con coincidencia exacta @Eva Lecuona
+    busqueda = pedir_y_validar_texto("Ingresa el nombre exacto del país a buscar: ").lower()
+    contador_coincidencia = 0
 
     for pais in lista_paises:
-        if pais["nombre"].lower() == nombre_buscar.lower():
-            pais_encontrado = pais
+        if busqueda == pais["nombre"].lower():
+            print(f"{pais['nombre']}, Continente: {pais['continente']}, Población: {pais['poblacion']}, Superficie: {pais['superficie']} km2")
+            contador_coincidencia += 1
             break
+            
+    if contador_coincidencia == 0:
+        print("No se encontró ningún país con ese nombre exacto")
 
-    if pais_encontrado != None:
-        print(f"\nPaís encontrado: {pais_encontrado['nombre']}")
-        actualizar_poblacion(pais_encontrado)
-        actualizar_superficie(pais_encontrado)
-        
-        print(f"\nLos datos de {pais_encontrado['nombre']} se actualizaron correctamente")
+
+def menu_busqueda_por_nombre(lista_paises): #Muestra un submenú para elegir entre búsqueda por coincidencia parcial o exacta @Eva Lecuona
+    print("\nIngresa el tipo de búsqueda por nombre que deseas realizar:")
+    print("1. Búsqueda por coincidencia parcial")
+    print("2. Búsqueda por coincidencia exacta")
+
+    opcion = input("Selecciona una opción: ").strip()
+    while opcion != "1" and opcion != "2":
+        print("Opción inválida: Ingresa 1 o 2")
+        opcion = input("Selecciona una opción: ").strip()
+
+    if opcion == "1":
+        buscar_pais_coincidencia_parcial(lista_paises)
     else:
-        print("No se encontró ningún país con ese nombre en el sistema")
+        buscar_pais_coincidencia_exacta(lista_paises)
+
+def buscar_objeto_pais(lista_paises, nombre_buscar): #Busca un país por nombre y devuelve el diccionario completo del país encontrado. Si no lo encuentra, lanza una excepción @Eva Lecuona
+    for pais in lista_paises:
+        if pais["nombre"].lower() == nombre_buscar.lower():
+            return pais
+    raise ValueError("No se encontró ningún país con ese nombre en el sistema")
+
+def actualizar_datos_pais(lista_paises): #Actualiza la población y superficie de un país encontrado por nombre. Si no encuentra el país, muestra un mensaje de error y vuelve a pedir el nombre @Eva Lecuona
+    while True:
+        nombre_buscar = pedir_y_validar_texto("Ingresa el nombre del país a modificar: ")
+        
+        try:
+            pais_encontrado = buscar_objeto_pais(lista_paises, nombre_buscar)
+            print(f"\nPaís encontrado: {pais_encontrado['nombre']}")
+            actualizar_poblacion(pais_encontrado)
+            actualizar_superficie(pais_encontrado)
+
+            print(f"\nLos datos de {pais_encontrado['nombre']} se actualizaron correctamente")
+            break
+            
+        except ValueError as e:
+            print(f"Error: {e}.Intenta de nuevo\n")
+
+
+def filtrar_pais_por_continente(lista_paises): #Filtra los países por continente @Eva Lecuona
+    continente_buscar = pedir_y_validar_texto("Ingresa el continente a filtrar: ").lower()
+    contador_paises = 0
+    
+    print(f"\nPaíses en el continente '{continente_buscar.capitalize()}':")
+    for pais in lista_paises:
+        if pais["continente"].lower() == continente_buscar:
+            print(f"- {pais['nombre']},Población: {pais['poblacion']},Superficie: {pais['superficie']} km2")
+            contador_paises += 1
+            
+    if contador_paises == 0:
+        print("No se encontraron países en ese continente")
+
+def filtrar_pais_por_rango_poblacion(lista_paises): #Filtra los países por un rango de población ingresado por el usuario @Eva Lecuona
+    minimo = pedir_y_validar_numero("Ingresa la población Mínima: ")
+    maximo = pedir_y_validar_numero("Ingresa la población Maxima: ")
+
+    while minimo > maximo:
+        print("Error: La población mínima no puede ser mayor a la máxima")
+        minimo = pedir_y_validar_numero("Ingresa la población Mínima nuevamente: ")
+        maximo = pedir_y_validar_numero("Ingresa la población Maxima nuevamente: ")
+
+    contador = 0
+    for pais in lista_paises:
+        if minimo <= pais["poblacion"] <= maximo:
+            print(f"- {pais['nombre']},Continente: {pais['continente']},Población: {pais['poblacion']}")
+            contador += 1
+            
+    if contador == 0:
+        print("No se encontraron países en ese rango de población")
+
+
+def filtrar_pais_por_rango_superficie(lista_paises): #Filtra los países por un rango de superficie ingresado por el usuario @Eva Lecuona
+    minimo = pedir_y_validar_numero("Ingresa la superficie Minima (en km²): ")
+    maximo = pedir_y_validar_numero("Ingresa la superficie Máxima (en km²): ")
+
+    while minimo > maximo:
+        print("Error: La superficie mínima no puede ser mayor a la máxima")
+        minimo = pedir_y_validar_numero("Ingresa la superficie Minima nuevamente: ")
+        maximo = pedir_y_validar_numero("Ingresa la superficie Máxima nuevamente: ")
+
+    contador = 0
+    for pais in lista_paises:
+        if minimo <= pais["superficie"] <= maximo:
+            print(f"- {pais['nombre']} ,Continente: {pais['continente']},Superficie: {pais['superficie']} km2")
+            contador += 1
+            
+    if contador == 0:
+        print("No se encontraron países en ese rango de superficie")
+
+
+def menu_filtros_por_rango(lista_paises): #Muestra un submenú para elegir entre filtrar por población o superficie @Eva Lecuona
+    print("\nIngresa la opción de filtro por rango que deseas aplicar:")
+    print("1. Filtrar por rango de Población")
+    print("2. Filtrar por rango de Superficie")
+
+    opcion = input("Selecciona una opción: ").strip()
+    while opcion != "1" and opcion != "2":
+        print("Opción inválida: Ingresa 1 o 2")
+        opcion = input("Selecciona una opción: ").strip()
+    if opcion == "1":
+        filtrar_pais_por_rango_poblacion(lista_paises)
+    else:
+        filtrar_pais_por_rango_superficie(lista_paises)
+
 
 
 
@@ -122,7 +218,7 @@ def menu_principal(): #Muestra el menú principal @Eva Lecuona
     print("2. Actualizar población y superficie de un país")
     print("3. Buscar un país por nombre")
     print("4. Filtrar países (Continente / Población / Superficie)")
-    print("5. Ordenar países [Compañero]")
+    print("5. Ordenar países")
     print("6. Mostrar estadísticas generales")
     print("7. Guardar y Salir")
 
@@ -142,13 +238,12 @@ def ejecutar_menu(): #Ejecuta el menú principal y maneja las opciones seleccion
             actualizar_datos_pais(lista_paises)
         elif opcion == "3":
             print("")
-            buscar_pais_por_nombre(lista_paises)
+            menu_busqueda_por_nombre(lista_paises)
         elif opcion == "4":
             print("")
-            
+            menu_filtros_por_rango(lista_paises)
         elif opcion == "5":
             print("")
-            
         elif opcion == "6":
             print("")
             
