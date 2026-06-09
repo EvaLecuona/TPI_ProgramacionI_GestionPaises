@@ -222,6 +222,149 @@ def menu_principal(): #Muestra el menú principal @Eva Lecuona
     print("6. Mostrar estadísticas generales")
     print("7. Guardar y Salir")
 
+def menu_filtros(lista_paises): #Submenú de filtros: continente, población o superficie @Nieves Sofia Macarena
+    print("\nSelecciona el tipo de filtro:")
+    print("1. Filtrar por Continente")
+    print("2. Filtrar por rango de Población")
+    print("3. Filtrar por rango de Superficie")
+
+    opcion = input("Selecciona una opción: ").strip()
+    while opcion not in ("1", "2", "3"):
+        print("Opción inválida. Ingresa 1, 2 o 3")
+        opcion = input("Selecciona una opción: ").strip()
+
+    if opcion == "1":
+        filtrar_pais_por_continente(lista_paises)
+    elif opcion == "2":
+        filtrar_pais_por_rango_poblacion(lista_paises)
+    else:
+        filtrar_pais_por_rango_superficie(lista_paises)
+
+
+def elegir_direccion(): #Pregunta al usuario si quiere orden ascendente o descendente @Nieves Sofia Macarena
+    print("¿En qué orden?")
+    print("1. Ascendente")
+    print("2. Descendente")
+
+    opcion = input("Selecciona una opción: ").strip()
+    while opcion not in ("1", "2"):
+        print("Opción inválida. Ingresa 1 o 2")
+        opcion = input("Selecciona una opción: ").strip()
+
+    return opcion == "2"
+
+
+def mostrar_lista_ordenada(lista_ordenada): #Imprime en consola la lista de países ya ordenada @Nieves Sofia Macarena
+    for pais in lista_ordenada:
+        print(f"- {pais['nombre']}, Continente: {pais['continente']}, Población: {pais['poblacion']}, Superficie: {pais['superficie']} km2")
+
+
+def ordenar_por_nombre(lista_paises): #Ordena los países por nombre asc o desc @Nieves Sofia Macarena
+    descendente = elegir_direccion()
+    lista_ordenada = sorted(lista_paises, key=lambda p: p["nombre"].lower(), reverse=descendente)
+    direccion = "descendente" if descendente else "ascendente"
+    print(f"\nPaíses ordenados por nombre ({direccion}):")
+    mostrar_lista_ordenada(lista_ordenada)
+
+
+def ordenar_por_poblacion(lista_paises): #Ordena los países por población asc o desc @Nieves Sofia Macarena
+    descendente = elegir_direccion()
+    lista_ordenada = sorted(lista_paises, key=lambda p: p["poblacion"], reverse=descendente)
+    direccion = "descendente" if descendente else "ascendente"
+    print(f"\nPaíses ordenados por población ({direccion}):")
+    mostrar_lista_ordenada(lista_ordenada)
+
+
+def ordenar_por_superficie(lista_paises): #Ordena los países por superficie asc o desc @Nieves Sofia Macarena
+    descendente = elegir_direccion()
+    lista_ordenada = sorted(lista_paises, key=lambda p: p["superficie"], reverse=descendente)
+    direccion = "descendente" if descendente else "ascendente"
+    print(f"\nPaíses ordenados por superficie ({direccion}):")
+    mostrar_lista_ordenada(lista_ordenada)
+
+
+def menu_ordenamiento(lista_paises): #Submenú de ordenamiento: nombre, población o superficie @Nieves Sofia Macarena
+    if not lista_paises:
+        print("No hay países cargados para ordenar")
+        return
+
+    print("\nOrdenar países por:")
+    print("1. Nombre")
+    print("2. Población")
+    print("3. Superficie")
+
+    opcion = input("Selecciona una opción: ").strip()
+    while opcion not in ("1", "2", "3"):
+        print("Opción inválida. Ingresa 1, 2 o 3")
+        opcion = input("Selecciona una opción: ").strip()
+
+    if opcion == "1":
+        ordenar_por_nombre(lista_paises)
+    elif opcion == "2":
+        ordenar_por_poblacion(lista_paises)
+    else:
+        ordenar_por_superficie(lista_paises)
+
+
+def pais_mayor_poblacion(lista_paises): #Devuelve el país con mayor población @Nieves Sofia Macarena
+    return max(lista_paises, key=lambda p: p["poblacion"])
+
+
+def pais_menor_poblacion(lista_paises): #Devuelve el país con menor población @Nieves Sofia Macarena
+    return min(lista_paises, key=lambda p: p["poblacion"])
+
+
+def promedio_poblacion(lista_paises): #Calcula el promedio de población @Nieves Sofia Macarena
+    total = sum(p["poblacion"] for p in lista_paises)
+    return total / len(lista_paises)
+
+
+def promedio_superficie(lista_paises): #Calcula el promedio de superficie @Nieves Sofia Macarena
+    total = sum(p["superficie"] for p in lista_paises)
+    return total / len(lista_paises)
+
+
+def cantidad_por_continente(lista_paises): #Cuenta cuántos países hay por continente @Nieves Sofia Macarena
+    conteo = {}
+    for pais in lista_paises:
+        continente = pais["continente"]
+        if continente in conteo:
+            conteo[continente] += 1
+        else:
+            conteo[continente] = 1
+    return conteo
+
+
+def mostrar_estadisticas(lista_paises): #Muestra todas las estadísticas generales @Nieves Sofia Macarena
+    if not lista_paises:
+        print("No hay países cargados para mostrar estadísticas")
+        return
+
+    mayor = pais_mayor_poblacion(lista_paises)
+    menor = pais_menor_poblacion(lista_paises)
+    prom_pob = promedio_poblacion(lista_paises)
+    prom_sup = promedio_superficie(lista_paises)
+    por_continente = cantidad_por_continente(lista_paises)
+
+    print("\n--- ESTADÍSTICAS GENERALES ---")
+    print(f"País con mayor población: {mayor['nombre']} ({mayor['poblacion']} habitantes)")
+    print(f"País con menor población: {menor['nombre']} ({menor['poblacion']} habitantes)")
+    print(f"Promedio de población:    {prom_pob:,.0f} habitantes")
+    print(f"Promedio de superficie:   {prom_sup:,.0f} km2")
+    print("\nCantidad de países por continente:")
+    for continente, cantidad in por_continente.items():
+        print(f"  - {continente}: {cantidad} país/es")
+
+
+def guardar_paises_en_csv(lista_paises): #Guarda todos los países en el archivo CSV @Nieves Sofia Macarena
+    try:
+        with open("paises.csv", mode="w", encoding="utf-8", newline="") as archivo:
+            escritor = csv.DictWriter(archivo, fieldnames=["nombre", "poblacion", "superficie", "continente"])
+            escritor.writeheader()
+            escritor.writerows(lista_paises)
+        print("Los datos se guardaron correctamente en 'paises.csv'")
+    except Exception as e:
+        print(f"Error al guardar el archivo: {e}")
 
 def ejecutar_menu(): #Ejecuta el menú principal y maneja las opciones seleccionadas por el usuario @Eva Lecuona
     lista_paises = carga_paises_desde_csv()
@@ -241,14 +384,16 @@ def ejecutar_menu(): #Ejecuta el menú principal y maneja las opciones seleccion
             menu_busqueda_por_nombre(lista_paises)
         elif opcion == "4":
             print("")
-            menu_filtros_por_rango(lista_paises)
+            menu_filtros(lista_paises)
         elif opcion == "5":
             print("")
+            menu_ordenamiento(lista_paises)
         elif opcion == "6":
             print("")
-            
+            mostrar_estadisticas(lista_paises)
         elif opcion == "7":
             print("")
+            guardar_paises_en_csv(lista_paises)
             break
         else:
             print("\nOpción inválida. Elegí un número del 1 al 7")
