@@ -70,12 +70,13 @@ Qué hace: Permite dar de alta un país que no esté registrado en el sistema.
 
 Cómo funciona: Solicita de forma secuencial el nombre, la población, la superficie y el continente. Utiliza funciones de validación para garantizar que las cadenas de texto no estén vacías y que los datos numéricos sean enteros positivos válidos, impidiendo que el usuario ingrese letras o símbolos.
 
-## 2. Actualizar población y superficie de un país
+### 2. Actualizar población y superficie de un país
+
 Qué hace: Modifica los datos dinámicos de un país ya existente.
 
-Cómo funciona: Solicita el nombre del país a modificar y lo busca en la base de datos mediante un sistema de excepciones (try-except).
+Cómo funciona: Solicita el nombre del país a modificar y lo busca en la lista de datos. Si no lo encuentra, gestiona la validación mediante un condicional.
 
-Nota: Si el usuario ingresa mal el nombre, el sistema atrapa el error (ValueError) y le permite reintentar el ingreso de forma infinita dentro de un bucle, en lugar de expulsarlo al menú principal. Una vez encontrado, se actualizan de forma segura su población y su superficie.
+Nota: Si el usuario ingresa mal el nombre, el sistema detecta que el resultado es inexistente (`None`) y, mediante un bucle `while True`, le permite reintentar el ingreso de forma infinita en lugar de expulsarlo al menú principal. Una vez encontrado el país, se actualizan su población y su superficie.
 
 ## 3. Buscar un país por nombre
 Qué hace: Localiza la información completa de uno o varios países.
