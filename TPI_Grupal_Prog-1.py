@@ -1,4 +1,5 @@
 import csv 
+import os
 
 def carga_paises_desde_csv(): #Carga los países desde el archivo CSV y devuelve una lista de diccionarios con la información de cada país @Eva Lecuona
     lista_paises = []
@@ -34,22 +35,29 @@ def pedir_y_validar_texto(texto): #Valida que el campo de texto no esté vacío 
         campo = input(texto).strip()
         if campo != "": 
             return campo 
-        print("Error: Un campo obligatorio no puede estar vacío")
+        print("Error: Un campo obligatorio no puede estar vacío ")
 
 
 def pedir_y_validar_numero(numero): #Valida que el campo de número sea un entero positivo @Eva Lecuona
     while True:
         try:
             campo = input(numero)
-            numero = int(campo)
-            if numero > 0:
-                return numero
-            print("Error: El número debe ser mayor a cero")
+            valor_numerico = int(campo)
+            if valor_numerico > 0:
+                return valor_numerico
+            print("Error: El número debe ser mayor a cero ")
         except ValueError:
-            print("Error: Ingresa un número entero válido")
+            print("Error: Ingresa un número entero válido ")
 
 def agregar_pais(lista_paises): #Pide al usuario los datos de un nuevo país, los valida y los agrega a la lista de países @Eva Lecuona
-    nombre = pedir_y_validar_texto("Ingresa el nombre del país: ")
+    while True:
+        nombre = pedir_y_validar_texto("Ingresa el nombre del país: ")
+        pais_encontrado = buscar_objeto_pais(lista_paises, nombre)
+        
+        if pais_encontrado != None: 
+            print(f"Error: El país '{nombre}' ya está registrado. Intentá con otro nombre")
+        else:
+            break
     continente = pedir_y_validar_texto("Ingresa el continente: ")
     poblacion = pedir_y_validar_numero("Ingresa la población: ")
     superficie = pedir_y_validar_numero("Ingresa la superficie (en km2): ")
@@ -121,28 +129,26 @@ def menu_busqueda_por_nombre(lista_paises): #Muestra un submenú para elegir ent
     else:
         buscar_pais_coincidencia_exacta(lista_paises)
 
-def buscar_objeto_pais(lista_paises, nombre_buscar): #Busca un país por nombre y devuelve el diccionario completo del país encontrado. Si no lo encuentra, lanza una excepción @Eva Lecuona
+def buscar_objeto_pais(lista_paises, nombre_buscar): #Busca un país por nombre y devuelve el diccionario completo del país encontrado. @Eva Lecuona
     for pais in lista_paises:
         if pais["nombre"].lower() == nombre_buscar.lower():
             return pais
-    raise ValueError("No se encontró ningún país con ese nombre en el sistema")
+    return None
 
 def actualizar_datos_pais(lista_paises): #Actualiza la población y superficie de un país encontrado por nombre. Si no encuentra el país, muestra un mensaje de error y vuelve a pedir el nombre @Eva Lecuona
     while True:
         nombre_buscar = pedir_y_validar_texto("Ingresa el nombre del país a modificar: ")
         
-        try:
-            pais_encontrado = buscar_objeto_pais(lista_paises, nombre_buscar)
+        pais_encontrado = buscar_objeto_pais(lista_paises, nombre_buscar)
+        
+        if pais_encontrado != None:
             print(f"\nPaís encontrado: {pais_encontrado['nombre']}")
             actualizar_poblacion(pais_encontrado)
             actualizar_superficie(pais_encontrado)
-
             print(f"\nLos datos de {pais_encontrado['nombre']} se actualizaron correctamente")
             break
-            
-        except ValueError as e:
-            print(f"Error: {e}.Intenta de nuevo\n")
-
+        else:
+            print("Error: No se encontró ningún país con ese nombre en el sistema. Intenta de nuevo\n")
 
 def filtrar_pais_por_continente(lista_paises): #Filtra los países por continente @Eva Lecuona
     continente_buscar = pedir_y_validar_texto("Ingresa el continente a filtrar: ").lower()
@@ -193,23 +199,6 @@ def filtrar_pais_por_rango_superficie(lista_paises): #Filtra los países por un 
             
     if contador == 0:
         print("No se encontraron países en ese rango de superficie")
-
-
-def menu_filtros_por_rango(lista_paises): #Muestra un submenú para elegir entre filtrar por población o superficie @Eva Lecuona
-    print("\nIngresa la opción de filtro por rango que deseas aplicar:")
-    print("1. Filtrar por rango de Población")
-    print("2. Filtrar por rango de Superficie")
-
-    opcion = input("Selecciona una opción: ").strip()
-    while opcion != "1" and opcion != "2":
-        print("Opción inválida: Ingresa 1 o 2")
-        opcion = input("Selecciona una opción: ").strip()
-    if opcion == "1":
-        filtrar_pais_por_rango_poblacion(lista_paises)
-    else:
-        filtrar_pais_por_rango_superficie(lista_paises)
-
-
 
 
 def menu_principal(): #Muestra el menú principal @Eva Lecuona
@@ -374,30 +363,22 @@ def ejecutar_menu(): #Ejecuta el menú principal y maneja las opciones seleccion
         opcion = input("").strip()
         
         if opcion == "1":
-            print("")
             agregar_pais(lista_paises)
         elif opcion == "2":
-            print("")
             actualizar_datos_pais(lista_paises)
         elif opcion == "3":
-            print("")
             menu_busqueda_por_nombre(lista_paises)
         elif opcion == "4":
-            print("")
             menu_filtros(lista_paises)
         elif opcion == "5":
-            print("")
             menu_ordenamiento(lista_paises)
         elif opcion == "6":
-            print("")
             mostrar_estadisticas(lista_paises)
         elif opcion == "7":
-            print("")
             guardar_paises_en_csv(lista_paises)
             break
         else:
-            print("\nOpción inválida. Elegí un número del 1 al 7")
-
+            print("Opción inválida. Intente de nuevo.")
 # Inicia el programa:
 if __name__ == "__main__":
     ejecutar_menu()
