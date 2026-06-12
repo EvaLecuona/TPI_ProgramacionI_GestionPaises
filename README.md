@@ -118,8 +118,8 @@ Alemania,83149300,357022,Europa
 
 ## Links
 
--  **Video demostrativo:**
--  **Informe PDF:**
+-  **Video demostrativo:** https://www.youtube.com/watch?v=bJnISkzUnRw
+-  **Informe PDF:** https://drive.google.com/drive/folders/19dgGtu8lo2ALfiJY3YJ_uBnr0cVkxtLp
 
 ---
 *UTN TUP a Distancia — Programación 1 — 2026*
